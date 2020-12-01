@@ -1,10 +1,12 @@
-import React, { useState }  from 'react'
+import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 
 
 const CreateNew = (props) => {
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
+  const history = useHistory()
 
 
   const handleSubmit = (e) => {
@@ -15,6 +17,11 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    props.setNotification(`a new anecdote ${content} have been created!`)
+    setTimeout(() => {
+      props.setNotification('')
+    }, 10000)
+    history.push('/')
   }
 
   return (

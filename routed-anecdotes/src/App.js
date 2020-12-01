@@ -17,14 +17,14 @@ const App = () => {
       author: 'Jez Humble',
       info: 'https://martinfowler.com/bliki/FrequencyReducesDifficulty.html',
       votes: 0,
-      id: 1
+      id: '1'
     },
     {
       content: 'Premature optimization is the root of all evil',
       author: 'Donald Knuth',
       info: 'http://wiki.c2.com/?PrematureOptimization',
       votes: 0,
-      id: 2
+      id: '2'
     }
   ])
 
@@ -51,21 +51,21 @@ const App = () => {
 
   const match = useRouteMatch('/anecdotes/:id')
   const anecdote = match
-    ? anecdotes.find(anecdote => anecdote.id === Number(match.params.id))
+    ? anecdotes.find(anecdote => anecdote.id === match.params.id)
     : null
 
   return (
     <div>
-      <Notification notification={notification} />
       <h1>Software anecdotes</h1>
       <Menu />
+      <Notification notification={notification} />
 
       <Switch>
         <Route path='/anecdotes/:id'>
           <Anecdote vote={vote} anecdote={anecdote} />
         </Route>
-        <Route path='/create' setNotification={setNotification}>
-          <CreateNew addNew={addNew} />
+        <Route path='/create' >
+          <CreateNew addNew={addNew} setNotification={setNotification} />
         </Route>
         <Route path='/about'>
           <About />
