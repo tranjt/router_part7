@@ -4,9 +4,9 @@ import { useField } from '../hooks'
 
 
 const CreateNew = (props) => {
-  const content = useField('text')
-  const author = useField('text')
-  const info = useField('text')
+  const { reset: contentReset, ...content } = useField('text')
+  const { reset: authorReset, ...author } = useField('text')
+  const { reset: infoReset, ...info } = useField('text')
   const history = useHistory()
 
   const handleSubmit = (e) => {
@@ -23,6 +23,11 @@ const CreateNew = (props) => {
     }, 10000)
     history.push('/')
   }
+  const resetForm = () => {
+    contentReset()
+    authorReset()
+    infoReset()
+  }
 
   return (
     <div>
@@ -30,17 +35,18 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input  {...content} />
+          <input {...content} />
         </div>
         <div>
           author
-          <input  {...author} />
+          <input {...author} />
         </div>
         <div>
           url for more info
-          <input  {...info} />
+          <input {...info} />
         </div>
-        <button>create</button>
+        <button type='submit'>create</button>
+        <button type='button' onClick={resetForm}>reset</button>
       </form>
     </div>
   )
