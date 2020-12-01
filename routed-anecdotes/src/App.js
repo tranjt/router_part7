@@ -1,8 +1,5 @@
 import React, { useState } from 'react'
-import {
-  BrowserRouter as Router,
-  Switch, Route
-} from 'react-router-dom'
+import { Switch, Route, useRouteMatch } from 'react-router-dom'
 
 import About from './components/About'
 import AnecdoteList from './components/AnecdoteList'
@@ -10,7 +7,7 @@ import CreateNew from './components/CreateNew'
 import Footer from './components/Footer'
 import Menu from './components/Menu'
 import Notification from './components/Notification'
-
+import Anecdote from './components/Anecdote'
 
 
 const App = () => {
@@ -20,14 +17,14 @@ const App = () => {
       author: 'Jez Humble',
       info: 'https://martinfowler.com/bliki/FrequencyReducesDifficulty.html',
       votes: 0,
-      id: '1'
+      id: 1
     },
     {
       content: 'Premature optimization is the root of all evil',
       author: 'Donald Knuth',
       info: 'http://wiki.c2.com/?PrematureOptimization',
       votes: 0,
-      id: '2'
+      id: 2
     }
   ])
 
@@ -52,13 +49,21 @@ const App = () => {
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
   }
 
+  const match = useRouteMatch('/anecdotes/:id')
+  const anecdote = match
+    ? anecdotes.find(anecdote => anecdote.id === Number(match.params.id))
+    : null
+
   return (
-    <Router>
+    <div>
       <Notification notification={notification} />
       <h1>Software anecdotes</h1>
       <Menu />
 
       <Switch>
+        <Route path='/anecdotes/:id'>
+          <Anecdote vote={vote} anecdote={anecdote} />
+        </Route>
         <Route path='/create' setNotification={setNotification}>
           <CreateNew addNew={addNew} />
         </Route>
@@ -66,12 +71,12 @@ const App = () => {
           <About />
         </Route>
         <Route path='/'>
-          <AnecdoteList vote={vote} anecdotes={anecdotes} />
+          <AnecdoteList anecdotes={anecdotes} />
         </Route>
       </Switch>
 
       <Footer />
-    </Router>
+    </div>
   )
 }
 
