@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { updateBlog, deleteBlog } from '../reducers/blogsReducer'
 
-const Blog = ({ blog, updateBlog, removeBlog }) => {
+const Blog = ({ blog }) => {
+  const dispatch = useDispatch()
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -17,18 +20,21 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
     setVisible(!visible)
   }
 
-  const handleUpdateLikes = () => {
-    updateBlog(blog.id, {
+  const handleUpdateBlog = () => {
+    const updatedBlog = {
       user: blog.user.id,
       likes: blog.likes + 1,
       author: blog.author,
       title: blog.title,
       url: blog.url
-    })
+    }
+    dispatch(updateBlog(blog.id, updatedBlog))
   }
 
   const handleRemoveBlog = () => {
-    removeBlog(blog)
+    if (window.confirm(`Delete '${blog.title}' by ${blog.author}?`)) {
+      dispatch(deleteBlog(blog))
+    }
   }
 
   return (
@@ -36,7 +42,7 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
       {blog.title} {blog.author} <button id='viewButton' onClick={toggleVisibility}>{viewOrHide}</button>
       <div style={showWhenVisible} className='togglableContent'>
         <p>{blog.url}</p>
-        <p id='like'>{blog.likes} <button id='likeButton' onClick={handleUpdateLikes}>like</button></p>
+        <p id='like'>{blog.likes} <button id='likeButton' onClick={handleUpdateBlog}>like</button></p>
         <p>{blog.user.name}</p>
         <button className='deleteButtonStyle' onClick={handleRemoveBlog}>delete</button>
       </div>

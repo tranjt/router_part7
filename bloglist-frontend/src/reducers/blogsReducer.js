@@ -17,6 +17,10 @@ const blogsReducer = (state = [], action) => {
       })
       return blogService.sortByLikes(blogs)
     }
+    case 'DELETE_BLOG': {
+      const id = action.data.id
+      return state.filter(blog => blog.id !== id)
+    }
     default:
       return state
   }
@@ -69,6 +73,24 @@ export const updateBlog = (id, newBlog) => {
     return 'done'
   }
 }
+
+
+export const deleteBlog = (blog) => {
+  return async dispatch => {
+    try {
+      await blogService.remove(blog.id)
+      dispatch({
+        type: 'DELETE_BLOG',
+        data: blog,
+      })
+      dispatch(setNotification(`Blog '${blog.title}' by ${blog.author} deleted`, 'success', 5))
+    } catch (error) {
+      dispatch(setNotification(error.response.data.error, 'error', 5))
+    }
+    return 'done'
+  }
+}
+
 
 
 export default blogsReducer
