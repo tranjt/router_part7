@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import BlogList from './components/BlogList'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs } from './reducers/blogsReducer'
 import { useDispatch } from 'react-redux'
 
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -19,15 +19,9 @@ const App = () => {
 
   const blogFormRef = React.createRef()
 
-  const sortByLikes = blogs => {
-    return blogs.sort((a, b) => b.likes - a.likes)
-  }
-
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(sortByLikes(blogs))
-    )
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -66,52 +60,6 @@ const App = () => {
     blogService.setToken(null)
   }
 
-  const createBlog = (newBlog) => {
-    blogService
-      .create(newBlog)
-      .then(returnedBlog => {
-        blogFormRef.current.toggleVisibility()
-        const sortedBlogs = sortByLikes(blogs.concat(returnedBlog))
-        setBlogs(sortedBlogs)
-        dispatch(setNotification(`New blog '${newBlog.title}' by ${newBlog.author} added`, 'success', 5))
-
-      }).catch(error => {
-        dispatch(setNotification(error.response.data.error, 'error', 5))
-      })
-  }
-
-  const updateBlogs = (id, newObject) => {
-    const blogIndex = blogs.findIndex(blog => blog.id === id)
-    const newBlogList = [...blogs]
-    newBlogList[blogIndex] = { ...newBlogList[blogIndex], likes: newObject.likes }
-    setBlogs(sortByLikes(newBlogList))
-  }
-
-  const updateBlog = (id, updatedBlog) => {
-    blogService
-      .update(id, updatedBlog)
-      .then(returnedBlog => {
-        updateBlogs(id, returnedBlog)
-
-      }).catch(error => {
-        dispatch(setNotification(error.response.data.error, 'error', 5))
-      })
-  }
-
-
-  const removeBlog = (delBlog) => {
-    if (window.confirm(`Delete '${delBlog.title}' by ${delBlog.author}?`)) {
-      blogService.remove(delBlog.id)
-        .then(() => {
-          const newBlogs = blogs.filter(blog => blog.id !== delBlog.id)
-          setBlogs(newBlogs)
-          dispatch(setNotification(`Blog '${delBlog.title}' by ${delBlog.author} deleted`, 'success', 5))
-
-        }).catch(error => {
-          dispatch(setNotification(error.response.data.error, 'error', 5))
-        })
-    }
-  }
 
   if (user === null) {
     return (
@@ -129,18 +77,17 @@ const App = () => {
     )
   }
 
+
   return (
     <div>
       <h2>Blogs</h2>
       <Notification />
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
       <Togglable buttonLabel='New blog' ref={blogFormRef}>
-        <BlogForm createBlog={createBlog} />
+        <BlogForm blogFormRef={blogFormRef} />
       </Togglable>
 
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} removeBlog={removeBlog} />
-      )}
+      <BlogList />
     </div>
   )
 }

@@ -40,5 +40,9 @@ const remove = async (id) => {
   return response.data
 }
 
+const sortByLikes = blogs => {
+  return blogs.sort((a, b) => b.likes - a.likes)
+}
+
 // eslint-disable-next-line
-export default { getAll, setToken, create, update, remove }
+export default { getAll, setToken, create, update, remove, sortByLikes }
