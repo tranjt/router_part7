@@ -6,6 +6,8 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import { setNotification } from './reducers/notificationReducer'
+import { useDispatch } from 'react-redux'
 
 
 const App = () => {
@@ -13,7 +15,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({ text: null, classname: '' })
+  const dispatch = useDispatch()
 
   const blogFormRef = React.createRef()
 
@@ -36,13 +38,6 @@ const App = () => {
     }
   }, [])
 
-  const displayNotification = (text, notificationType) => {
-    setNotification({ text, classname: notificationType })
-    setTimeout(() => {
-      setNotification({ text: null, classname: '' })
-    }, 5000)
-  }
-
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -50,23 +45,22 @@ const App = () => {
       const user = await loginService.login({
         username, password
       })
-
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
-
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
-      displayNotification(`${user.name} logged in`, 'success')
+      dispatch(setNotification(`${user.name} logged in`, 'success', 5))
+
     } catch (error) {
-      displayNotification(error.response.data.error, 'error')
+      dispatch(setNotification(error.response.data.error, 'error', 5))
     }
   }
 
   const handleLogout = () => {
-    displayNotification(`${user.name} logged out`, 'success')
+    dispatch(setNotification(`${user.name} logged out`, 'success', 5))
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
     blogService.setToken(null)
@@ -79,9 +73,10 @@ const App = () => {
         blogFormRef.current.toggleVisibility()
         const sortedBlogs = sortByLikes(blogs.concat(returnedBlog))
         setBlogs(sortedBlogs)
-        displayNotification(`A new blog '${newBlog.title}' by ${newBlog.author} added`, 'success')
+        dispatch(setNotification(`New blog '${newBlog.title}' by ${newBlog.author} added`, 'success', 5))
+
       }).catch(error => {
-        displayNotification(error.response.data.error, 'error')
+        dispatch(setNotification(error.response.data.error, 'error', 5))
       })
   }
 
@@ -97,8 +92,9 @@ const App = () => {
       .update(id, updatedBlog)
       .then(returnedBlog => {
         updateBlogs(id, returnedBlog)
+
       }).catch(error => {
-        displayNotification(error.response.data.error, 'error')
+        dispatch(setNotification(error.response.data.error, 'error', 5))
       })
   }
 
@@ -109,12 +105,11 @@ const App = () => {
         .then(() => {
           const newBlogs = blogs.filter(blog => blog.id !== delBlog.id)
           setBlogs(newBlogs)
-          displayNotification(`Blog '${delBlog.title}' by ${delBlog.author} deleted`, 'success')
+          dispatch(setNotification(`Blog '${delBlog.title}' by ${delBlog.author} deleted`, 'success', 5))
 
         }).catch(error => {
-          displayNotification(error.response.data.error, 'error')
+          dispatch(setNotification(error.response.data.error, 'error', 5))
         })
-
     }
   }
 
@@ -122,7 +117,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message={notification} />
+        <Notification />
         <LoginForm
           username={username}
           password={password}
@@ -137,7 +132,7 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
-      <Notification message={notification} />
+      <Notification />
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
       <Togglable buttonLabel='New blog' ref={blogFormRef}>
         <BlogForm createBlog={createBlog} />
