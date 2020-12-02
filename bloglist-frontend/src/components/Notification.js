@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ErrorMessage = ({ message }) => {
+const Notification = ({ message }) => {
   if (message.text === null) {
     return null
   }
@@ -12,4 +12,4 @@ const ErrorMessage = ({ message }) => {
   )
 }
 
-export default ErrorMessage
+export default Notification

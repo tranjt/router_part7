@@ -4,7 +4,7 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import ErrorMessage from './components/ErrorMessage'
+import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 
@@ -13,7 +13,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState({ text: null, classname: '' })
+  const [notification, setNotification] = useState({ text: null, classname: '' })
 
   const blogFormRef = React.createRef()
 
@@ -36,10 +36,10 @@ const App = () => {
     }
   }, [])
 
-  const displayErrorMessage = (text, errorType) => {
-    setErrorMessage({ text, classname: errorType })
+  const displayNotification = (text, notificationType) => {
+    setNotification({ text, classname: notificationType })
     setTimeout(() => {
-      setErrorMessage({ text: null, classname: '' })
+      setNotification({ text: null, classname: '' })
     }, 5000)
   }
 
@@ -59,14 +59,14 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      displayErrorMessage(`${user.name} logged in`, 'success')
+      displayNotification(`${user.name} logged in`, 'success')
     } catch (error) {
-      displayErrorMessage(error.response.data.error, 'error')
+      displayNotification(error.response.data.error, 'error')
     }
   }
 
   const handleLogout = () => {
-    displayErrorMessage(`${user.name} logged out`, 'success')
+    displayNotification(`${user.name} logged out`, 'success')
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
     blogService.setToken(null)
@@ -79,9 +79,9 @@ const App = () => {
         blogFormRef.current.toggleVisibility()
         const sortedBlogs = sortByLikes(blogs.concat(returnedBlog))
         setBlogs(sortedBlogs)
-        displayErrorMessage(`A new blog '${newBlog.title}' by ${newBlog.author} added`, 'success')
+        displayNotification(`A new blog '${newBlog.title}' by ${newBlog.author} added`, 'success')
       }).catch(error => {
-        displayErrorMessage(error.response.data.error, 'error')
+        displayNotification(error.response.data.error, 'error')
       })
   }
 
@@ -98,7 +98,7 @@ const App = () => {
       .then(returnedBlog => {
         updateBlogs(id, returnedBlog)
       }).catch(error => {
-        displayErrorMessage(error.response.data.error, 'error')
+        displayNotification(error.response.data.error, 'error')
       })
   }
 
@@ -109,10 +109,10 @@ const App = () => {
         .then(() => {
           const newBlogs = blogs.filter(blog => blog.id !== delBlog.id)
           setBlogs(newBlogs)
-          displayErrorMessage(`Blog '${delBlog.title}' by ${delBlog.author} deleted`, 'success')
+          displayNotification(`Blog '${delBlog.title}' by ${delBlog.author} deleted`, 'success')
 
         }).catch(error => {
-          displayErrorMessage(error.response.data.error, 'error')
+          displayNotification(error.response.data.error, 'error')
         })
 
     }
@@ -122,7 +122,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <ErrorMessage message={errorMessage} />
+        <Notification message={notification} />
         <LoginForm
           username={username}
           password={password}
@@ -137,7 +137,7 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
-      <ErrorMessage message={errorMessage} />
+      <Notification message={notification} />
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
       <Togglable buttonLabel='New blog' ref={blogFormRef}>
         <BlogForm createBlog={createBlog} />
