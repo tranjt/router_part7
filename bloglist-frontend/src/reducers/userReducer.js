@@ -1,6 +1,6 @@
 import blogService from '../services/blogs'
 import loginService from '../services/login'
-import { setNotification } from '../reducers/notificationReducer'
+import { setNotification } from './notificationReducer'
 
 const userReducer = (state = null, action) => {
   switch (action.type) {
