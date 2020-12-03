@@ -12,9 +12,10 @@ const usersReducer = (state = [], action) => {
 export const initializeUsers = () => {
   return async dispatch => {
     const users = await usersService.getUsers()
+    const sortedUsers = usersService.sortByBlogCount(users)
     dispatch({
       type: 'INIT_USERS',
-      data: users
+      data: sortedUsers
     })
   }
 }

@@ -6,5 +6,9 @@ const getUsers = async () => {
   return response.data
 }
 
+const sortByBlogCount = (users) => {
+  return users.sort((a, b) => b.blogs.length - a.blogs.length)
+}
+
 // eslint-disable-next-line
-export default { getUsers }
+export default { getUsers, sortByBlogCount }
