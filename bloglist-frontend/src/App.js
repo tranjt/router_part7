@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react'
 import {
-  Switch, Route, Link,
+  Switch, Route,
   Redirect, useRouteMatch
 } from 'react-router-dom'
 import { initializeBlogs } from './reducers/blogsReducer'
 import { useDispatch, useSelector } from 'react-redux'
-import { initializeUser, userLogout } from './reducers/userReducer'
+import { initializeUser } from './reducers/userReducer'
 import { initializeUsers } from './reducers/usersReducer'
-
 import Notification from './components/Notification'
 import Users from './components/Users'
 import User from './components/User'
 import Main from './components/Main'
 import Login from './components/Login'
 import BlogView from './components/BlogView'
+import NavBar from './components/Navbar'
 
 
 const App = () => {
@@ -36,13 +36,6 @@ const App = () => {
     }
   }, [])
 
-  const handleLogout = () => {
-    dispatch(userLogout(authUser))
-  }
-  const padding = {
-    padding: 5
-  }
-
   const userMatch = useRouteMatch('/users/:id')
   const user = userMatch
     ? users.find(user => user.id === userMatch.params.id)
@@ -55,15 +48,9 @@ const App = () => {
 
   return (
     <div>
-      <Link style={padding} to="/">home</Link>
-      <Link style={padding} to="/users">users</Link>
-      {authUser
-        ? <em>{authUser.name} logged in <button onClick={handleLogout}>logout</button></em>
-        : null
-      }
-      {authUser ? <h2>Blogs</h2> : null}
+      <NavBar authUser={authUser} />
+      {authUser ? <h2>blog app</h2> : null}
       <Notification />
-
       <Switch>
         <Route path='/users/:id'>
           <User user={user} />
@@ -72,7 +59,7 @@ const App = () => {
           {authUser ? <Users /> : <Redirect to="/login" />}
         </Route>
         <Route path='/blogs/:id'>
-          <BlogView blog={blog} />
+          {authUser ? <BlogView blog={blog} /> : <Redirect to="/login" />}
         </Route>
         <Route path='/'>
           {authUser ? <Main blogFormRef={blogFormRef} />
