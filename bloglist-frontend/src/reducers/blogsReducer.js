@@ -17,6 +17,15 @@ const blogsReducer = (state = [], action) => {
       })
       return blogService.sortByLikes(blogs)
     }
+    case 'NEW_COMMENT': {
+      const id = action.data.id
+      return state.map(blog => {
+        if (blog.id === id) {
+          blog.comments.push(action.data.comment)
+        }
+        return blog
+      })
+    }
     case 'DELETE_BLOG': {
       const id = action.data.id
       return state.filter(blog => blog.id !== id)
@@ -91,6 +100,19 @@ export const deleteBlog = (blog) => {
   }
 }
 
-
+export const createComment = (id, newComment) => {
+  return async dispatch => {
+    try {
+      const comment = await blogService.addComment(id, newComment)
+      dispatch({
+        type: 'NEW_COMMENT',
+        data: { id, comment }
+      })
+    } catch (error) {
+      dispatch(setNotification(error.response.data.error, 'error', 5))
+    }
+    return 'done'
+  }
+}
 
 export default blogsReducer

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import { updateBlog } from '../reducers/blogsReducer'
+import NewComment from '../components/NewComment'
 
 const BlogView = ({ blog }) => {
   const dispatch = useDispatch()
@@ -24,6 +25,7 @@ const BlogView = ({ blog }) => {
       <p id='like'>{blog.likes} likes <button id='likeButton' onClick={handleUpdateBlog}>like</button></p>
       <p>added by {blog.user.name}</p>
       <h3>comments</h3>
+      <NewComment blogId={blog.id} />
       <ul>
         {blog.comments.map(comment =>
           <li key={comment._id}>{comment.comment} </li>)}
