@@ -16,6 +16,7 @@ import BlogView from './components/BlogView'
 import NavBar from './components/Navbar'
 
 
+
 const App = () => {
   const dispatch = useDispatch()
   const authUser = useSelector(state => state.authUser)
@@ -47,7 +48,7 @@ const App = () => {
     : null
 
   return (
-    <div>
+    <div className="container">
       <NavBar authUser={authUser} />
       {authUser ? <h2>blog app</h2> : null}
       <Notification />

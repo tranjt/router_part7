@@ -38,7 +38,7 @@ export const userLogin = (username, password) => {
       dispatch(setNotification(`${user.name} logged in`, 'success', 5))
 
     } catch (error) {
-      dispatch(setNotification(error.response.data.error, 'error', 5))
+      dispatch(setNotification(error.response.data.error, 'danger', 5))
     }
     return 'done'
   }

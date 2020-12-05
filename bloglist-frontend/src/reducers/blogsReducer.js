@@ -62,7 +62,7 @@ export const createBlog = (newBlog) => {
       })
       dispatch(setNotification(`New blog '${blog.title}' by ${blog.author} added`, 'success', 5))
     } catch (error) {
-      dispatch(setNotification(error.response.data.error, 'error', 5))
+      dispatch(setNotification(error.response.data.error, 'danger', 5))
     }
     return 'done'
   }
@@ -77,7 +77,7 @@ export const updateBlog = (id, newBlog) => {
         data: blog,
       })
     } catch (error) {
-      dispatch(setNotification(error.response.data.error, 'error', 5))
+      dispatch(setNotification(error.response.data.error, 'danger', 5))
     }
     return 'done'
   }
@@ -94,7 +94,7 @@ export const deleteBlog = (blog) => {
       })
       dispatch(setNotification(`Blog '${blog.title}' by ${blog.author} deleted`, 'success', 5))
     } catch (error) {
-      dispatch(setNotification(error.response.data.error, 'error', 5))
+      dispatch(setNotification(error.response.data.error, 'danger', 5))
     }
     return 'done'
   }
@@ -109,7 +109,7 @@ export const createComment = (id, newComment) => {
         data: { id, comment }
       })
     } catch (error) {
-      dispatch(setNotification(error.response.data.error, 'error', 5))
+      dispatch(setNotification(error.response.data.error, 'danger', 5))
     }
     return 'done'
   }
